@@ -73,9 +73,6 @@ inline constexpr glm::vec3 CUBE_POSITIONS[]{
 };
 inline constexpr glm::vec3 CUBE_ROTATION_AXIS{ 1.0f, 0.3f, 0.5f };
 
-inline constexpr glm::vec3 CAMERA_UP{ 0.0f, 1.0f,  0.0f };
-inline constexpr float CAMERA_SPEED{ 5.0f };
-
 void framebuffer_size_callback(GLFWwindow* window, const int width, const int height) {
     glViewport(0, 0, width, height);
 }
@@ -159,8 +156,6 @@ int main() {
     // texture attribute
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
     glEnableVertexAttribArray(2);
-
-    glm::vec3 cameraPos{ 0.0f, 0.0f, 3.0f };
 
     while(!glfwWindowShouldClose(window)) {
         processInput(window);
