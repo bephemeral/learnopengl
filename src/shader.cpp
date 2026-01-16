@@ -6,7 +6,7 @@
 #include <sstream>
 #include <iostream>
 
-Shader::Shader(std::filesystem::path vertexPath, std::filesystem::path fragmentPath) {
+Shader::Shader(const std::filesystem::path vertexPath, const std::filesystem::path fragmentPath) {
     // 1. retrieve the vertex/fragment source code from filePath
     std::string vertexCode;
     std::string fragmentCode;
@@ -60,15 +60,15 @@ void Shader::use() {
     glUseProgram(ID); 
 }
 
-void Shader::setBool(const std::string_view name, bool value) const {         
+void Shader::setBool(const std::string_view name, const bool value) const {         
     glUniform1i(glGetUniformLocation(ID, name.data()), (int)value); 
 }
 
-void Shader::setInt(const std::string_view name, int value) const { 
+void Shader::setInt(const std::string_view name, const int value) const { 
     glUniform1i(glGetUniformLocation(ID, name.data()), value); 
 }
 
-void Shader::setFloat(const std::string_view name, float value) const { 
+void Shader::setFloat(const std::string_view name, const float value) const { 
     glUniform1f(glGetUniformLocation(ID, name.data()), value); 
 }
 

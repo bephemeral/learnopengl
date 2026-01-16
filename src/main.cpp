@@ -23,7 +23,7 @@ constexpr unsigned int indices[]{  // note that we start from 0!
     1, 2, 3
 };
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
+void framebuffer_size_callback(GLFWwindow* window, const int width, const int height) {
     glViewport(0, 0, width, height);
 }
 

@@ -2,7 +2,7 @@
 #include <iostream>
 #include "stb_image.h"
 
-Texture::Texture(const std::filesystem::path texturePath, GLenum textureUnit, GLenum textureFormat) {
+Texture::Texture(const std::filesystem::path texturePath, const GLenum textureUnit, const GLenum textureFormat) {
     glActiveTexture(textureUnit);
     glGenTextures(1, &ID);
     glBindTexture(GL_TEXTURE_2D, ID);

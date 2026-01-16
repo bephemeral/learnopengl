@@ -7,7 +7,7 @@ class Texture {
 public:
     unsigned int ID;
 
-    Texture(const std::filesystem::path texturePath, GLenum textureUnit, GLenum textureFormat);
+    Texture(const std::filesystem::path texturePath, const GLenum textureUnit, const GLenum textureFormat);
 
     void bind();
 };
