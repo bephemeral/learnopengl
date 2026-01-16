@@ -161,24 +161,38 @@ int main() {
         container.bind();
         awesomeface.bind();
 
-        // matrices
-        glm::mat4 view{ glm::mat4(1.0f) };
-        // note that we're translating the scene in the reverse direction of where we want to move
-        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-        glm::mat4 projection{ glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f) };
+        // camera
+        constexpr glm::vec3 cameraPos{ glm::vec3(0.0f, 0.0f, 3.0f) };
+        constexpr glm::vec3 cameraTarget{ glm::vec3(0.0f, 0.0f, 0.0f) };
+        glm::vec3 cameraDirection{ glm::normalize(cameraPos - cameraTarget) };
+        constexpr glm::vec3 up{ glm::vec3(0.0f, 1.0f, 0.0f) };
+        glm::vec3 cameraRight{ glm::normalize(glm::cross(up, cameraDirection)) };
+        glm::vec3 cameraUp{ glm::cross(cameraDirection, cameraRight) };
+
+        // viewmatrix
+        glm::mat4 view{ glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0f), 
+  		                            glm::vec3(0.0f, 0.0f, 0.0f), 
+  		                            glm::vec3(0.0f, 1.0f, 0.0f)) };
+        constexpr float radius = 10.0f;
+        const float camX = sin(glfwGetTime()) * radius;
+        const float camZ = cos(glfwGetTime()) * radius;
+        view = glm::lookAt(glm::vec3(camX, 0.0, camZ), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
+
+        // projection
+        const glm::mat4 projection{ glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f) };
 
         // apply matrices
         ourShader.setMat4("view", view);
         ourShader.setMat4("projection", projection);
         
         // draw boxes
-        float time = static_cast<float>(glfwGetTime());
+        const float time = static_cast<float>(glfwGetTime());
         for (const auto& [i, pos] : std::views::enumerate(cubePositions))
         {
             // calculate the model matrix for each object and pass it to shader before drawing
             glm::mat4 model{ glm::mat4(1.0f) };
             model = glm::translate(model, pos);
-            float angle{ 20.0f * (i + 1) };
+            const float angle{ 20.0f * (i + 1) };
             model = glm::rotate(model, time * glm::radians(angle), rotAxis);
             ourShader.setMat4("model", model);
 
