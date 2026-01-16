@@ -116,7 +116,10 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT);
 
         // move triangles
-        ourShader.setFloat("shift", std::sin(glfwGetTime()) / 2);
+        glm::mat4 trans{ glm::mat4(1.0f) };
+        trans = glm::rotate(trans, static_cast<float>(-glfwGetTime()), glm::vec3(0.0, 0.0, 1.0));
+        unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
+        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
 
         // set texture
         container.bind();
