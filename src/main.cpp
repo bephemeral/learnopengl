@@ -119,26 +119,12 @@ int main() {
     // enable z buffer
     glEnable(GL_DEPTH_TEST);
 
-    // generate VBO and store buffer id
-    unsigned int VBO;
-    glGenBuffers(1, &VBO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-    // copy vertices into VBO
-    glBufferData(GL_ARRAY_BUFFER, sizeof(CUBE_VERTICES), CUBE_VERTICES, GL_STATIC_DRAW);
-
     // VBO VS VAO
     // VBO - move vertices to gpu once, reuse every frame
     // VAO - how to interpret the VBO
-    unsigned int VAO;
+    unsigned int VBO, VAO;
+    glGenBuffers(1, &VBO);
     glGenVertexArrays(1, &VAO);
-
-    Texture container("assets/textures/container.jpg", GL_TEXTURE0, GL_RGB);
-    Texture awesomeface("assets/textures/awesomeface.png", GL_TEXTURE1, GL_RGBA);
-    ourShader.use();
-    ourShader.setInt("texture1", 0);
-    ourShader.setInt("texture2", 1);
 
     // Initialization code (done once, unless object frequently changes)
     // 1. bind Vertex Array Object
@@ -156,6 +142,12 @@ int main() {
     // texture attribute
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
     glEnableVertexAttribArray(2);
+
+    Texture container("assets/textures/container.jpg", GL_TEXTURE0, GL_RGB);
+    Texture awesomeface("assets/textures/awesomeface.png", GL_TEXTURE1, GL_RGBA);
+    ourShader.use();
+    ourShader.setInt("texture1", 0);
+    ourShader.setInt("texture2", 1);
 
     while(!glfwWindowShouldClose(window)) {
         processInput(window);
