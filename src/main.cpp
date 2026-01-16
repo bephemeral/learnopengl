@@ -72,13 +72,50 @@ inline constexpr glm::vec3 CUBE_POSITIONS[]{
 };
 inline constexpr glm::vec3 CUBE_ROTATION_AXIS{ 1.0f, 0.3f, 0.5f };
 
-inline constexpr glm::vec3 CAMERA_FRONT{ 0.0f, 0.0f, -1.0f };
 inline constexpr glm::vec3 CAMERA_UP{ 0.0f, 1.0f,  0.0f };
 inline constexpr float CAMERA_SPEED{ 5.0f };
 
 void framebuffer_size_callback(GLFWwindow* window, const int width, const int height) {
     glViewport(0, 0, width, height);
 }
+
+float yaw { -90.0f }, pitch { 0.0f };
+glm::vec3 cameraFront{ 0.0f, 0.0f, -1.0f };
+void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+{
+    static float lastX{ SCR_WIDTH / 2.0f }, lastY{ SCR_HEIGHT / 2.0f };
+    static bool firstMouse{ true };
+
+    if (firstMouse)
+    {
+        lastX = xpos;
+        lastY = ypos;
+        firstMouse = false;
+    }
+  
+    float xoffset = xpos - lastX;
+    float yoffset = lastY - ypos; 
+    lastX = xpos;
+    lastY = ypos;
+
+    float sensitivity = 0.1f;
+    xoffset *= sensitivity;
+    yoffset *= sensitivity;
+
+    yaw   += xoffset;
+    pitch += yoffset;
+
+    if(pitch > 89.0f)
+        pitch = 89.0f;
+    if(pitch < -89.0f)
+        pitch = -89.0f;
+
+    glm::vec3 direction;
+    direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    direction.y = sin(glm::radians(pitch));
+    direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+    cameraFront = glm::normalize(direction);
+}  
 
 float getDeltaTime() {
     static float lastFrame{ 0.0f };
@@ -98,13 +135,13 @@ glm::vec3 processInput(GLFWwindow *window) {
     glm::vec3 change{ 0.0f, 0.0f, 0.0f };
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        change += speed * CAMERA_FRONT;
+        change += speed * cameraFront;
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        change -= speed * CAMERA_FRONT;
+        change -= speed * cameraFront;
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        change -= glm::normalize(glm::cross(CAMERA_FRONT, CAMERA_UP)) * speed;
+        change -= glm::normalize(glm::cross(cameraFront, CAMERA_UP)) * speed;
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        change += glm::normalize(glm::cross(CAMERA_FRONT, CAMERA_UP)) * speed;
+        change += glm::normalize(glm::cross(cameraFront, CAMERA_UP)) * speed;
 
     return change;
 }
@@ -131,8 +168,11 @@ int main() {
 
     Shader ourShader("assets/shaders/shader.vs", "assets/shaders/shader.fs");
 
-    // register window resize callback
+    // register callbacks
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetCursorPosCallback(window, mouse_callback);  
+
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);  
 
     // set background colour
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -178,10 +218,15 @@ int main() {
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
     glEnableVertexAttribArray(2);
 
-    glm::vec3 cameraPos{ glm::vec3(0.0f, 0.0f, 3.0f) };
+    glm::vec3 cameraPos{ 0.0f, 0.0f, 3.0f };
+    glm::vec3 cameraDirection{};
 
     while(!glfwWindowShouldClose(window)) {
+        // update camera
         cameraPos += processInput(window);
+        cameraDirection.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+        cameraDirection.y = sin(glm::radians(pitch));
+        cameraDirection.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
 
         // clear depth and colour buffers
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -195,7 +240,7 @@ int main() {
         glm::mat4 view{ glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0f), 
   		                            glm::vec3(0.0f, 0.0f, 0.0f), 
   		                            glm::vec3(0.0f, 1.0f, 0.0f)) };
-        view = glm::lookAt(cameraPos, cameraPos + CAMERA_FRONT, CAMERA_UP);
+        view = glm::lookAt(cameraPos, cameraPos + cameraFront, CAMERA_UP);
 
         // projection
         const glm::mat4 projection{ glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f) };
@@ -209,7 +254,7 @@ int main() {
         for (const auto& [i, pos] : std::views::enumerate(CUBE_POSITIONS))
         {
             // calculate the model matrix for each object and pass it to shader before drawing
-            glm::mat4 model{ glm::mat4(1.0f) };
+            glm::mat4 model{ 1.0f };
             model = glm::translate(model, pos);
             const float angle{ 20.0f * (i + 1) };
             model = glm::rotate(model, time * glm::radians(angle), CUBE_ROTATION_AXIS);
