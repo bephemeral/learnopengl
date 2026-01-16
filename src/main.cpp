@@ -12,10 +12,10 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-constexpr unsigned int SCR_WIDTH{ 800 };
-constexpr unsigned int SCR_HEIGHT{ 600 };
+inline constexpr unsigned int SCR_WIDTH{ 800 };
+inline constexpr unsigned int SCR_HEIGHT{ 600 };
 
-constexpr float vertices[] = {
+inline constexpr float vertices[] = {
     -0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,  0.0f, 0.0f,  // bottom back left
      0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 0.0f,  1.0f, 0.0f,  // bottom back right
      0.5f,  0.5f, -0.5f,  0.0f, 0.0f, 1.0f,  1.0f, 1.0f,  // top back right
@@ -58,10 +58,6 @@ constexpr float vertices[] = {
     -0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.0f,  0.0f, 0.0f,
     -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, 1.0f,  0.0f, 1.0f
 };
-// constexpr unsigned int indices[]{  // note that we start from 0!
-//     0, 1, 3,
-//     1, 2, 3
-// };
 
 void framebuffer_size_callback(GLFWwindow* window, const int width, const int height) {
     glViewport(0, 0, width, height);
@@ -118,13 +114,6 @@ int main() {
     unsigned int VAO;
     glGenVertexArrays(1, &VAO);
 
-    // EBO - decides order to draw vertices in
-    // unsigned int EBO;
-    // glGenBuffers(1, &EBO);
-
-    // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    // glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
     Texture container("assets/textures/container.jpg", GL_TEXTURE0, GL_RGB);
     Texture awesomeface("assets/textures/awesomeface.png", GL_TEXTURE1, GL_RGBA);
     ourShader.use();
@@ -168,16 +157,11 @@ int main() {
         glm::mat4 projection{ glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f) };
 
         // apply matrices
-        int modelLoc = glGetUniformLocation(ourShader.ID, "model");
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-        int viewLoc = glGetUniformLocation(ourShader.ID, "view");
-        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-        int projLoc = glGetUniformLocation(ourShader.ID, "projection");
-        glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+        ourShader.setMat4("model", model);
+        ourShader.setMat4("view", view);
+        ourShader.setMat4("projection", projection);
 
         // draw box
-        // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-        // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
         glfwSwapBuffers(window);

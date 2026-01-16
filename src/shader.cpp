@@ -72,6 +72,10 @@ void Shader::setFloat(const std::string_view name, const float value) const {
     glUniform1f(glGetUniformLocation(ID, name.data()), value); 
 }
 
+void Shader::setMat4(const std::string_view name, const glm::mat4 value) const {
+    glUniformMatrix4fv(glGetUniformLocation(ID, name.data()), 1, GL_FALSE, glm::value_ptr(value));
+}
+
 void Shader::checkCompileErrors(unsigned int shader, const std::string_view type) {
     int success;
     char infoLog[1024];
