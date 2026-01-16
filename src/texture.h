@@ -1,12 +1,13 @@
 #pragma once
 
 #include <glad/glad.h>
+#include <filesystem>
 
 class Texture {
 public:
     unsigned int ID;
 
-    Texture(const char* texturePath, GLenum textureUnit, GLenum textureFormat);
+    Texture(const std::filesystem::path texturePath, GLenum textureUnit, GLenum textureFormat);
 
     void bind();
 };

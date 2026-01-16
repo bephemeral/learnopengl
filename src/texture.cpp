@@ -2,7 +2,7 @@
 #include <iostream>
 #include "stb_image.h"
 
-Texture::Texture(const char* texturePath, GLenum textureUnit, GLenum textureFormat) {
+Texture::Texture(const std::filesystem::path texturePath, GLenum textureUnit, GLenum textureFormat) {
     glActiveTexture(textureUnit);
     glGenTextures(1, &ID);
     glBindTexture(GL_TEXTURE_2D, ID);
@@ -13,7 +13,7 @@ Texture::Texture(const char* texturePath, GLenum textureUnit, GLenum textureForm
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     int width, height, nrChannels;
-    unsigned char *data = stbi_load(texturePath, &width, &height, &nrChannels, 0);
+    unsigned char *data = stbi_load(texturePath.c_str(), &width, &height, &nrChannels, 0);
 
     if(data) {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, textureFormat, GL_UNSIGNED_BYTE, data);
